@@ -1,25 +1,36 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
+import fetch from 'unfetch';
 
 class App extends Component {
+  state = {
+    loading: true,
+    users: [],
+  };
+  componentDidMount() {
+    fetch(process.env.REACT_APP_END_POINT + '/getUsers')
+      .then(res => {
+        return res.json();
+      })
+      .then(res => {
+        this.setState({ loading: false, users: res });
+      })
+      .catch(e => {
+        console.log(e);
+      });
+  }
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+        {this.state.loading ? (
+          'Loading...'
+        ) : (
+          <ul>
+            {this.state.users.map(({ name, id }) => (
+              <li key={id}>{name}</li>
+            ))}
+          </ul>
+        )}
       </div>
     );
   }
